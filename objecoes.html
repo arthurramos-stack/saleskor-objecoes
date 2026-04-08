@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>SalesKor - ARSENAL DINÂMICO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1b1f3b; --accent: #a4e600; --bg: #f0f2f5; }
+        body { font-family: 'Open Sans', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; color: var(--primary); }
+        h1, .subtitle, label, button, .option-title { font-family: 'Montserrat', sans-serif; font-weight: 800; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); width: 100%; max-width: 750px; border-top: 8px solid var(--accent); }
+        .logo-container { text-align: center; margin-bottom: -15px; display: flex; justify-content: center; align-items: center; }
+        .logo-saleskor { max-width: 250px; height: auto; display: block; }
+        h1 { color: var(--primary); text-align: center; margin-bottom: 0; font-size: 1.8em; text-transform: uppercase; letter-spacing: -1px; line-height: 1.1; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 25px; font-size: 0.75em; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; }
+        label { font-size: 0.85em; text-transform: uppercase; margin-top: 15px; color: var(--primary); display: block; }
+        select, input { width: 100%; padding: 12px; margin-top: 5px; border-radius: 10px; border: 2px solid #eee; box-sizing: border-box; font-size: 15px; background-color: #fcfcfc; transition: 0.3s; }
+        select:focus, input:focus { border-color: var(--accent); outline: none; }
+        .btn-main { width: 100%; padding: 20px; margin-top: 25px; border-radius: 12px; border: none; background: var(--accent); color: var(--primary); font-size: 1.1em; cursor: pointer; transition: 0.4s; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 800; }
+        .btn-main:hover { background: var(--primary); color: white; transform: translateY(-3px); }
+        .btn-main:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-cta { width: 100%; padding: 15px; margin-top: 15px; border-radius: 12px; border: 2px solid var(--primary); background: transparent; color: var(--primary); font-size: 0.9em; cursor: pointer; transition: 0.4s; text-transform: uppercase; font-weight: bold; font-family: 'Montserrat', sans-serif; }
+        .btn-cta:hover { background: var(--primary); color: white; }
+        .result-box { margin-top: 35px; display: none; border-top: 2px solid #eee; padding-top: 20px; }
+        .option { background: #fff; padding: 20px; border-left: 6px solid var(--accent); margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 10px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .option-title { color: #555; font-size: 0.75em; letter-spacing: 1px; text-transform: uppercase; }
+        .script-text { font-size: 1.05em; line-height: 1.6; color: var(--primary); font-weight: 400; }
+        .actions-container { display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+        .copy-btn, .share-btn { background: #eee; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.65em; font-family: 'Montserrat', sans-serif; font-weight: bold; color: #666; transition: 0.2s; text-transform: uppercase; }
+        .copy-btn:hover { background: #ddd; }
+        .share-btn { background: #25d366; color: white; }
+        .share-btn:hover { background: #1da855; }
+        .loading-wrap { text-align: center; padding: 30px 0; display: none; }
+        .spinner { width: 36px; height: 36px; border: 3px solid #eee; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-family: 'Montserrat', sans-serif; font-size: 0.8em; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .api-key-wrap { background: #fffbea; border: 2px solid #f0c040; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; }
+        .api-key-wrap label { color: #7a5c00; margin-top: 0; }
+        .api-key-wrap input { border-color: #f0c040; background: #fffef5; font-size: 13px; }
+        .api-key-hint { font-size: 0.75em; color: #a07800; margin-top: 6px; display: block; }
+        .error-box { background: #fff0f0; border-left: 6px solid #e05; padding: 16px 20px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9em; color: #c00; display: none; }
+        .placeholder { color: #1b1f3b; font-weight: bold; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo-container">
+        <img src="saleskologo.png.png" alt="Logo SalesKor" class="logo-saleskor">
+    </div>
+
+    <h1>DICIONÁRIO DE CONTORNO DE OBJEÇÕES</h1>
+    <p class="subtitle">Desenvolvido por Saleskor · Powered by IA</p>
+
+    <!-- CAMPO DA API KEY -->
+    <div class="api-key-wrap">
+        <label>🔑 Sua chave de API (Anthropic)</label>
+        <input type="password" id="apiKey" placeholder="sk-ant-api03-...">
+        <span class="api-key-hint">Sua chave fica salva só neste navegador e nunca sai do seu dispositivo. Obtenha em: console.anthropic.com</span>
+    </div>
+
+    <label>1. O que você está vendendo?</label>
+    <input type="text" id="produto" placeholder="Ex: Consultoria de Vendas...">
+
+    <label>2. Em qual etapa estamos?</label>
+    <select id="etapa">
+        <option value="Prospecção">PROSPECÇÃO (CONTATO INICIAL)</option>
+        <option value="Agendamento">AGENDAMENTO (MARCAR REUNIÃO)</option>
+        <option value="Qualificação">QUALIFICAÇÃO (DIAGNÓSTICO)</option>
+        <option value="Fechamento">FECHAMENTO (CONTRATO)</option>
+    </select>
+
+    <label>3. Tom de voz desejado</label>
+    <select id="tom">
+        <option value="Direto">DIRETO (PÉ NO PEITO)</option>
+        <option value="Consultivo">CONSULTIVO (ESPECIALISTA)</option>
+        <option value="Empático">EMPÁTICO (ACOLHEDOR)</option>
+    </select>
+
+    <label>4. Qual a Objeção?</label>
+    <input type="text" id="objecao" placeholder="Ex: Mande por e-mail, Já tenho fornecedor, Tá caro...">
+
+    <button class="btn-main" id="btnGerar" onclick="gerarContorno()">DESARMAR OBJEÇÃO</button>
+    <button class="btn-cta" onclick="window.open('SEU_LINK_AQUI', '_blank')">Agende um diagnóstico comercial agora</button>
+
+    <div class="loading-wrap" id="loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Gerando contornos inteligentes...</div>
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <div id="resultBox" class="result-box">
+        <div id="optionsContainer"></div>
+    </div>
+</div>
+
+<script>
+// Salva e recupera a API key no localStorage
+const apiInput = document.getElementById('apiKey');
+if (localStorage.getItem('sk_api_key')) {
+    apiInput.value = localStorage.getItem('sk_api_key');
+}
+apiInput.addEventListener('change', () => {
+    localStorage.setItem('sk_api_key', apiInput.value.trim());
+});
+
+async function gerarContorno() {
+    const apiKey  = document.getElementById('apiKey').value.trim();
+    const produto = document.getElementById('produto').value.trim();
+    const etapa   = document.getElementById('etapa').value;
+    const tom     = document.getElementById('tom').value;
+    const objecao = document.getElementById('objecao').value.trim();
+
+    // Validações
+    if (!apiKey)  return mostrarErro('Insira sua chave de API da Anthropic para continuar.');
+    if (!produto) return mostrarErro('Preencha o campo "O que você está vendendo?".');
+    if (!objecao) return mostrarErro('Preencha o campo "Qual a objeção?".');
+
+    // UI: loading
+    esconderErro();
+    document.getElementById('resultBox').style.display = 'none';
+    document.getElementById('optionsContainer').innerHTML = '';
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('btnGerar').disabled = true;
+
+    const prompt = `Você é um especialista em vendas consultivas B2B no Brasil com 15 anos de experiência.
+
+O vendedor precisa de 3 formas diferentes de contornar uma objeção. Retorne APENAS JSON válido, sem texto antes ou depois, sem markdown.
+
+Contexto:
+- Produto/serviço sendo vendido: ${produto}
+- Etapa do processo de venda: ${etapa}
+- Tom de voz desejado: ${tom}
+- Objeção recebida: "${objecao}"
+
+Regras para os contornos:
+- Cada contorno deve ter uma abordagem COMPLETAMENTE diferente das outras
+- Use o tom de voz solicitado (${tom}) em todos
+- As respostas devem ser prontas para falar, naturais, sem parecer script engessado
+- Adapte ao contexto de ${etapa}
+- Cada nome de técnica deve ser criativo e memorável (2-4 palavras)
+- As respostas devem mencionar o produto/serviço de forma contextualizada: "${produto}"
+- Use [NOME] onde o vendedor deve inserir o nome do prospect
+
+Formato JSON:
+{
+  "contornos": [
+    {
+      "tecnica": "Nome criativo da técnica",
+      "resposta": "Texto completo da resposta, pronto para falar",
+      "por_que_funciona": "Explicação curta em 1 linha de por que essa abordagem funciona"
+    },
+    {
+      "tecnica": "Nome criativo da técnica",
+      "resposta": "Texto completo da resposta, pronto para falar",
+      "por_que_funciona": "Explicação curta em 1 linha de por que essa abordagem funciona"
+    },
+    {
+      "tecnica": "Nome criativo da técnica",
+      "resposta": "Texto completo da resposta, pronto para falar",
+      "por_que_funciona": "Explicação curta em 1 linha de por que essa abordagem funciona"
+    }
+  ]
+}`;
+
+    try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 1000,
+                messages: [{ role: 'user', content: prompt }]
+            })
+        });
+
+        if (response.status === 401) throw new Error('Chave de API inválida. Verifique e tente novamente.');
+        if (response.status === 429) throw new Error('Limite de requisições atingido. Aguarde alguns segundos e tente novamente.');
+        if (!response.ok) throw new Error(`Erro na API (${response.status}). Tente novamente.`);
+
+        const data = await response.json();
+        const raw = data.content.map(b => b.text || '').join('');
+        const clean = raw.replace(/```json|```/g, '').trim();
+        const parsed = JSON.parse(clean);
+
+        renderResultados(parsed.contornos);
+
+    } catch (err) {
+        mostrarErro(err.message || 'Erro inesperado. Verifique sua conexão e tente novamente.');
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('btnGerar').disabled = false;
+    }
+}
+
+function renderResultados(contornos) {
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+
+    contornos.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'option';
+        const textoLimpo = c.resposta.replace(/\[NOME\]/g, '<span class="placeholder">[NOME]</span>');
+        div.innerHTML = `
+            <div class="option-title">${c.tecnica}</div>
+            <div class="script-text">${textoLimpo}</div>
+            <div style="font-size:0.78em; color:#888; font-style:italic; padding: 2px 0 4px;">
+                ⚡ ${c.por_que_funciona}
+            </div>
+            <div class="actions-container">
+                <button class="copy-btn" onclick="copyText(this)">COPIAR</button>
+                <button class="share-btn" onclick="shareWhatsApp(this)">WHATSAPP</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+
+    document.getElementById('resultBox').style.display = 'block';
+}
+
+function copyText(btn) {
+    const scriptDiv = btn.closest('.option').querySelector('.script-text');
+    const texto = scriptDiv.innerText;
+    navigator.clipboard.writeText(texto).then(() => {
+        btn.textContent = 'COPIADO!';
+        btn.style.background = '#a4e600';
+        btn.style.color = '#1b1f3b';
+        setTimeout(() => {
+            btn.textContent = 'COPIAR';
+            btn.style.background = '';
+            btn.style.color = '';
+        }, 2000);
+    });
+}
+
+function shareWhatsApp(btn) {
+    const scriptDiv = btn.closest('.option').querySelector('.script-text');
+    const texto = encodeURIComponent(scriptDiv.innerText);
+    window.open(`https://wa.me/?text=${texto}`, '_blank');
+}
+
+function mostrarErro(msg) {
+    const box = document.getElementById('errorBox');
+    box.textContent = msg;
+    box.style.display = 'block';
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('btnGerar').disabled = false;
+}
+
+function esconderErro() {
+    document.getElementById('errorBox').style.display = 'none';
+}
+</script>
+</body>
+</html>
