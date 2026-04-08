@@ -1,1 +1,0 @@
-# saleskor-objecoes
